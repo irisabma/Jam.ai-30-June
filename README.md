@@ -1,9 +1,3 @@
-I'm sorry to hear that the CodePen link isn't working for you\! Sometimes CodePen previews can be a bit finicky, or there might be a caching issue.
-
-Let's try this: I'll provide the **complete HTML code** again here. Please try copying this entire code block and pasting it into a **brand new CodePen** (or a simple `.html` file on your computer) to see if that resolves the issue.
-
-**Here is the complete HTML code for the Jam.ai Sales Training Dashboard:**
-
 ```html
 <!DOCTYPE html>
 <html lang="en">
