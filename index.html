@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Jam 30 juni</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jam.ai Sales Training Dashboard</title>
+    <!-- Tailwind CSS CDN for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light grey background */
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            padding: 1.5rem;
+        }
+        .progress-bar-container {
+            background-color: #e0e0e0;
+            border-radius: 9999px; /* Fully rounded */
+            height: 0.75rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background-color: #4CAF50; /* Green for progress */
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #4c51bf; /* Indigo-like blue */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background-color: #434190; /* Darker indigo */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-6xl">
+        <!-- Header Section -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Jam.ai Sales Training Dashboard</h1>
+            <p class="text-lg text-gray-600">Insights into your team's performance and progress.</p>
+        </header>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="text-center text-gray-600 text-xl mb-8 hidden">
+            Loading data...
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <main id="dashboardContent" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <!-- Most Progress Card -->
+            <section class="card md:col-span-1">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Most Progress</h2>
+                <div id="mostProgressList" class="space-y-4">
+                    <!-- Progress items will be injected here by JavaScript -->
+                    <p class="text-gray-500">Loading progress data...</p>
+                </div>
+            </section>
+
+            <!-- Top 3 Scores Scoreboard Card -->
+            <section class="card md:col-span-1">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Top 3 Scores</h2>
+                <div id="topScoresList" class="space-y-4">
+                    <!-- Top scores will be injected here by JavaScript -->
+                    <p class="text-gray-500">Loading top scores...</p>
+                </div>
+            </section>
+
+            <!-- Highest Average Score Card -->
+            <section class="card md:col-span-1">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Highest Average Score</h2>
+                <div id="highestAverageScore" class="space-y-4">
+                    <!-- Highest average score will be injected here by JavaScript -->
+                    <p class="text-gray-500">Loading average score data...</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Upcoming Training Track Section -->
+        <section class="card w-full max-w-6xl mx-auto mt-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Upcoming Training Track: Cold Calling with Fleet Partners - Round 2</h2>
+            <p class="text-gray-600 mb-4">
+                Get ready for the next phase of your sales journey! This 10-day sprint will conclude on <strong class="text-purple-700">14 July</strong>. In this track, you'll refresh your skills in cold calling fleet owners. You'll start by practicing each step of the ICON framework, then put it into practice in 2 full, challenging cold calls.
+            </p>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Outcome Metrics:</h3>
+            <ul class="list-disc list-inside text-gray-600 mb-4">
+                <li>
+                    <strong>Highest Average Improvement:</strong> This metric focuses on learning and rewards teams for making multiple attempts and showing significant growth with each try. It encourages continuous effort and development.
+                </li>
+                <li>
+                    <strong>Highest Average Score:</strong> This will serve as a secondary prize to balance the "Most Improved" metric. It's designed to acknowledge and reward teams that perform exceptionally well right from the start, even if they have less room for improvement.
+                </li>
+            </ul>
+        </section>
+
+        <!-- Team Generator Section -->
+        <section class="card w-full max-w-6xl mx-auto mt-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Team Generator for Sprint Activity</h2>
+            <p class="text-gray-600 mb-4">Generate random teams of 3 or 4 people from your participants.</p>
+            <button id="generateTeamsBtn" class="btn-primary mb-6">Generate Teams</button>
+            <div id="generatedTeamsOutput" class="space-y-4">
+                <!-- Generated teams will be displayed here -->
+                <p class="text-gray-500">Click "Generate Teams" to create new groups.</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // JavaScript for fetching data and updating the UI
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const dashboardContent = document.getElementById('dashboardContent');
+            const mostProgressList = document.getElementById('mostProgressList');
+            const topScoresList = document.getElementById('topScoresList');
+            const highestAverageScoreDiv = document.getElementById('highestAverageScore');
+            const generateTeamsBtn = document.getElementById('generateTeamsBtn');
+            const generatedTeamsOutput = document.getElementById('generatedTeamsOutput');
+
+            // Define the specific track to filter by
+            const TARGET_TRACK = "Cold-Calling with Fleet Owners - Round 1";
+
+            // --- Mock Data Simulation ---
+            // This data simulates responses from the Jam.ai API.
+            // Updated 'completedTrack' for Maja to false.
+            const mockApiData = {
+                users: [
+                    { id: 'user1', name: 'Vincent', team: 'Gijs' },
+                    { id: 'user2', name: 'Amine', team: 'Gijs' },
+                    { id: 'user3', name: 'Enzo', team: 'Gijs' },
+                    { id: 'user4', name: 'Etienne', team: 'Gijs' },
+                    { id: 'user5', name: 'Joani', team: 'Gijs' },
+                    { id: 'user6', name: 'Lucas', team: 'Gijs' },
+                    { id: 'user7', name: 'Musa', team: 'Dani' },
+                    { id: 'user8', name: 'Arnas', team: 'Dani' },
+                    { id: 'user9', name: 'Chiara', team: 'Dani' },
+                    { id: 'user10', name: 'Cesare', team: 'Dani' },
+                    { id: 'user11', name: 'Kaleb', team: 'Dani' },
+                    { id: 'user12', name: 'Arko', team: 'Dani' },
+                    { id: 'user13', name: 'Maja', team: 'Ben' },
+                    { id: 'user14', name: 'Fernando', team: 'Ben' }
+                ],
+                // Simulating getUserProgress data for 'most progress' calculation
+                userProgress: [
+                    { userId: 'user1', previousScore: 60, currentScore: 85, track: TARGET_TRACK, completedTrack: true }, // Vincent - completed
+                    { userId: 'user2', previousScore: 70, currentScore: 92, track: TARGET_TRACK, completedTrack: true }, // Amine - completed
+                    { userId: 'user3', previousScore: 50, currentScore: 75, track: "Another Track", completedTrack: true }, // Enzo - different track
+                    { userId: 'user4', previousScore: 80, currentScore: 88, track: TARGET_TRACK, completedTrack: false }, // Etienne - NOT completed
+                    { userId: 'user5', previousScore: 45, currentScore: 90, track: TARGET_TRACK, completedTrack: true }, // Joani - completed, high progress
+                    { userId: 'user6', previousScore: 75, currentScore: 80, track: "Another Track", completedTrack: true }, // Lucas - different track
+                    { userId: 'user7', previousScore: 65, currentScore: 70, track: TARGET_TRACK, completedTrack: true }, // Musa - completed
+                    { userId: 'user8', previousScore: 55, currentScore: 95, track: TARGET_TRACK, completedTrack: true }, // Arnas - completed, high progress
+                    { userId: 'user9', previousScore: 90, currentScore: 93, track: "Another Track", completedTrack: true }, // Chiara - different track
+                    { userId: 'user10', previousScore: 70, currentScore: 78, track: TARGET_TRACK, completedTrack: false }, // Cesare - NOT completed
+                    { userId: 'user11', previousScore: 60, currentScore: 65, track: TARGET_TRACK, completedTrack: true }, // Kaleb - completed
+                    { userId: 'user12', previousScore: 85, currentScore: 87, track: "Another Track", completedTrack: true }, // Arko - different track
+                    { userId: 'user13', previousScore: 95, currentScore: 98, track: TARGET_TRACK, completedTrack: false }, // Maja - NOT completed
+                    { userId: 'user14', previousScore: 70, currentScore: 82, track: TARGET_TRACK, completedTrack: true }  // Fernando - completed
+                ],
+                // Simulating getUserScores data for 'top scores' and 'average score'
+                userScores: [
+                    { userId: 'user1', scores: [85, 78, 90], track: TARGET_TRACK, completedTrack: true },
+                    { userId: 'user2', scores: [92, 88, 95], track: TARGET_TRACK, completedTrack: true },
+                    { userId: 'user3', scores: [75, 68, 80], track: "Another Track", completedTrack: true },
+                    { userId: 'user4', scores: [88, 85, 91], track: TARGET_TRACK, completedTrack: false },
+                    { userId: 'user5', scores: [90, 85, 92], track: TARGET_TRACK, completedTrack: true },
+                    { userId: 'user6', scores: [80, 75, 82], track: "Another Track", completedTrack: true },
+                    { userId: 'user7', scores: [70, 65, 72], track: TARGET_TRACK, completedTrack: true },
+                    { userId: 'user8', scores: [95, 90, 98], track: TARGET_TRACK, completedTrack: true }, // Arnas - high scores
+                    { userId: 'user9', scores: [93, 91, 96], track: "Another Track", completedTrack: true },
+                    { userId: 'user10', scores: [78, 72, 85], track: TARGET_TRACK, completedTrack: false },
+                    { userId: 'user11', scores: [65, 60, 70], track: TARGET_TRACK, completedTrack: true },
+                    { userId: 'user12', scores: [87, 83, 89], track: "Another Track", completedTrack: true },
+                    { userId: 'user13', scores: [98, 95, 99], track: TARGET_TRACK, completedTrack: false }, // Maja - NOT completed
+                    { userId: 'user14', scores: [82, 79, 85], track: TARGET_TRACK, completedTrack: true }
+                ]
+            };
+
+            /**
+             * Simulates fetching data from the API.
+             * In a real application, you would use `fetch()` here.
+             * @param {string} endpoint - The API endpoint to simulate.
+             * @returns {Promise<Object>} A promise that resolves with the mock data.
+             */
+            async function fetchData(endpoint) {
+                loadingIndicator.classList.remove('hidden'); // Show loading indicator
+                dashboardContent.classList.add('hidden');    // Hide content
+                return new Promise(resolve => {
+                    setTimeout(() => { // Simulate network delay
+                        loadingIndicator.classList.add('hidden'); // Hide loading indicator
+                        dashboardContent.classList.remove('hidden'); // Show content
+                        switch (endpoint) {
+                            case 'users':
+                                resolve(mockApiData.users);
+                                break;
+                            case 'userProgress':
+                                // Filter progress data by the target track AND completedTrack
+                                resolve(mockApiData.userProgress.filter(p => p.track === TARGET_TRACK && p.completedTrack));
+                                break;
+                            case 'userScores':
+                                // Filter scores data by the target track AND completedTrack
+                                resolve(mockApiData.userScores.filter(s => s.track === TARGET_TRACK && s.completedTrack));
+                                break;
+                            default:
+                                resolve([]);
+                        }
+                    }, 1000); // 1 second delay
+                });
+            }
+
+            /**
+             * Calculates and displays the users who made the most progress.
+             */
+            async function displayMostProgress() {
+                const users = await fetchData('users');
+                const progressData = await fetchData('userProgress'); // Already filtered by fetchData
+
+                // Map user IDs to their names for easier lookup
+                const userMap = new Map(users.map(user => [user.id, user.name]));
+
+                // Calculate progress for each user
+                const progressResults = progressData.map(data => {
+                    const progress = data.currentScore - data.previousScore;
+                    return {
+                        name: userMap.get(data.userId) || `Unknown User (${data.userId})`,
+                        progress: progress,
+                        currentScore: data.currentScore,
+                        previousScore: data.previousScore
+                    };
+                });
+
+                // Sort by progress in descending order
+                progressResults.sort((a, b) => b.progress - a.progress);
+
+                mostProgressList.innerHTML = ''; // Clear previous content
+
+                // Display top 5 or all if less than 5
+                const topProgress = progressResults.slice(0, 5);
+                if (topProgress.length === 0) {
+                    mostProgressList.innerHTML = '<p class="text-gray-500">No progress data available for completed participants in this track.</p>';
+                    return;
+                }
+
+                topProgress.forEach((item, index) => {
+                    const progressPercentage = Math.max(0, Math.min(100, (item.currentScore / 100) * 100)); // Assuming max score is 100
+                    const progressItem = `
+                        <div class="flex items-center space-x-4">
+                            <div class="text-xl font-bold text-blue-600 w-8 text-center">${index + 1}.</div>
+                            <div class="flex-grow">
+                                <p class="text-gray-700 font-medium">${item.name}</p>
+                                <p class="text-sm text-gray-500">Progress: +${item.progress} points (${item.previousScore} &rarr; ${item.currentScore})</p>
+                                <div class="progress-bar-container mt-1">
+                                    <div class="progress-bar" style="width: ${progressPercentage}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    mostProgressList.innerHTML += progressItem;
+                });
+            }
+
+            /**
+             * Calculates and displays the top 3 best scores.
+             */
+            async function displayTopScores() {
+                const users = await fetchData('users');
+                const scoresData = await fetchData('userScores'); // Already filtered by fetchData
+
+                const userMap = new Map(users.map(user => [user.id, user.name]));
+
+                // Flatten all scores and associate them with user names
+                const allIndividualScores = [];
+                scoresData.forEach(userScore => {
+                    userScore.scores.forEach(score => {
+                        allIndividualScores.push({
+                            name: userMap.get(userScore.userId) || `Unknown User (${userScore.userId})`,
+                            score: score
+                        });
+                    });
+                });
+
+                // Sort by score in descending order
+                allIndividualScores.sort((a, b) => b.score - a.score);
+
+                // Get unique top 3 users by their highest score
+                const top3Scores = [];
+                const addedUsers = new Set();
+                for (const scoreItem of allIndividualScores) {
+                    if (!addedUsers.has(scoreItem.name)) {
+                        top3Scores.push(scoreItem);
+                        addedUsers.add(scoreItem.name);
+                        if (top3Scores.length === 3) break;
+                    }
+                }
+
+                topScoresList.innerHTML = ''; // Clear previous content
+
+                if (top3Scores.length === 0) {
+                    topScoresList.innerHTML = '<p class="text-gray-500">No score data available for completed participants in this track.</p>';
+                    return;
+                }
+
+                top3Scores.forEach((item, index) => {
+                    let medalEmoji = '';
+                    if (index === 0) medalEmoji = '🥇';
+                    else if (index === 1) medalEmoji = '🥈';
+                    else if (index === 2) medalEmoji = '🥉';
+
+                    const scoreItem = `
+                        <div class="flex items-center space-x-4">
+                            <div class="text-3xl">${medalEmoji}</div>
+                            <div>
+                                <p class="text-gray-700 font-medium">${item.name}</p>
+                                <p class="text-sm text-gray-500">Score: <span class="font-semibold text-green-600">${item.score}</span></p>
+                            </div>
+                        </div>
+                    `;
+                    topScoresList.innerHTML += scoreItem;
+                });
+            }
+
+            /**
+             * Calculates and displays the user with the highest average score.
+             */
+            async function displayHighestAverageScore() {
+                const users = await fetchData('users');
+                const scoresData = await fetchData('userScores'); // Already filtered by fetchData
+
+                const userMap = new Map(users.map(user => [user.id, user.name]));
+
+                let highestAverage = 0;
+                let userWithHighestAverage = null;
+
+                scoresData.forEach(userScore => {
+                    if (userScore.scores.length > 0) {
+                        const sum = userScore.scores.reduce((acc, score) => acc + score, 0);
+                        const average = sum / userScore.scores.length;
+
+                        if (average > highestAverage) {
+                            highestAverage = average;
+                            userWithHighestAverage = {
+                                name: userMap.get(userScore.userId) || `Unknown User (${userScore.userId})`,
+                                average: average
+                            };
+                        }
+                    }
+                });
+
+                highestAverageScoreDiv.innerHTML = ''; // Clear previous content
+
+                if (userWithHighestAverage) {
+                    const averageScoreItem = `
+                        <div class="text-center py-4">
+                            <p class="text-5xl font-extrabold text-purple-700 mb-2">${userWithHighestAverage.name}</p>
+                            <p class="text-2xl text-gray-600">Average Score: <span class="font-bold text-purple-700">${highestAverage.toFixed(1)}</span></p>
+                            <p class="text-md text-gray-500 mt-2">Consistently performing at the top!</p>
+                        </div>
+                    `;
+                    highestAverageScoreDiv.innerHTML = averageScoreItem;
+                } else {
+                    highestAverageScoreDiv.innerHTML = '<p class="text-gray-500">No average score data available for completed participants in this track.</p>';
+                }
+            }
+
+            // --- Team Generator Logic ---
+            const allParticipants = [
+                "Vincent", "Amine", "Enzo", "Etienne", "Joani", "Lucas",
+                "Musa", "Arnas", "Chiara", "Cesare", "Kaleb", "Arko",
+                "Maja", "Fernando"
+            ];
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]]; // ES6 swap
+                }
+                return array;
+            }
+
+            function generateTeams() {
+                const shuffledParticipants = shuffleArray([...allParticipants]); // Create a shallow copy to shuffle
+                const numParticipants = shuffledParticipants.length;
+                const teams = [];
+
+                let currentParticipantIndex = 0;
+
+                // Prioritize groups of 4 as much as possible
+                while (numParticipants - currentParticipantIndex >= 7) { // If 7 or more participants left, can form at least one group of 4 and one of 3
+                    teams.push(shuffledParticipants.slice(currentParticipantIndex, currentParticipantIndex + 4));
+                    currentParticipantIndex += 4;
+                }
+
+                // Handle remaining participants
+                const remainingParticipants = numParticipants - currentParticipantIndex;
+
+                if (remainingParticipants > 0) {
+                    if (remainingParticipants === 5) {
+                        // Special case: 5 remaining, form one group of 3 and one of 2
+                        teams.push(shuffledParticipants.slice(currentParticipantIndex, currentParticipantIndex + 3));
+                        teams.push(shuffledParticipants.slice(currentParticipantIndex + 3, currentParticipantIndex + 5));
+                    } else if (remainingParticipants === 6) {
+                        // Special case: 6 remaining, form two groups of 3
+                        teams.push(shuffledParticipants.slice(currentParticipantIndex, currentParticipantIndex + 3));
+                        teams.push(shuffledParticipants.slice(currentParticipantIndex + 3, currentParticipantIndex + 6));
+                    } else {
+                        // For 1, 2, 3, 4 participants remaining, just form one group
+                        teams.push(shuffledParticipants.slice(currentParticipantIndex));
+                    }
+                }
+
+                displayGeneratedTeams(teams);
+            }
+
+            function displayGeneratedTeams(teams) {
+                generatedTeamsOutput.innerHTML = ''; // Clear previous teams
+                if (teams.length === 0) {
+                    generatedTeamsOutput.innerHTML = '<p class="text-gray-500">No participants to form teams.</p>';
+                    return;
+                }
+
+                teams.forEach((team, index) => {
+                    const teamDiv = `
+                        <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-2">Team ${index + 1} (${team.length} members)</h3>
+                            <p class="text-gray-700">${team.join(', ')}</p>
+                        </div>
+                    `;
+                    generatedTeamsOutput.innerHTML += teamDiv;
+                });
+            }
+
+            // Event listener for the generate teams button
+            generateTeamsBtn.addEventListener('click', generateTeams);
+
+            // Initial data load when the page loads
+            async function initializeDashboard() {
+                await displayMostProgress();
+                await displayTopScores();
+                await displayHighestAverageScore();
+            }
+
+            initializeDashboard();
+        });
+    </script>
+</body>
+</html>
+```
+<!-- partial -->
+  
+</body>
+</html>
